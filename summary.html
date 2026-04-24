@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Summary</title>
+</head>
+<body>
+
+<h2>Order Summary</h2>
+
+<p><strong>Name:</strong> <span id="name"></span></p>
+<p><strong>Product:</strong> <span id="product"></span></p>
+<p><strong>Quantity:</strong> <span id="quantity"></span></p>
+<p><strong>Order Total:</strong> <span id="total"></span></p>
+<p><strong>Pickup Method:</strong> <span id="pickup"></span></p>
+<p><strong>Address:</strong> <span id="address"></span></p>
+
+<h3>Thank you for your order!</h3>
+
+<script>
+  function getCookie(cookieName) {
+    let cookies = document.cookie.split(";");
+    for (let c of cookies) {
+      let [key, val] = c.trim().split("=");
+      if (key === cookieName) {
+        return decodeURIComponent(val);
+      }
+    }
+    return "";
+  }
+
+  let customerName = getCookie("customerName");
+  let productData = localStorage.getItem("product");
+  let quantity = parseInt(localStorage.getItem("quantity"));
+  let pickup = localStorage.getItem("pickup");
+  let address = localStorage.getItem("address");
+
+  let productName = "";
+  let price = 0;
+
+  if (productData) {
+    let parts = productData.split("-");
+    productName = parts[0].trim();
+    price = parseInt(parts[1].trim());
+  }
+
+  let total = price * quantity;
+
+  if (pickup === "Meetup") {
+    address = "N/A";
+  }
+
+  document.getElementById("name").innerText = customerName;
+  document.getElementById("product").innerText = productName;
+  document.getElementById("quantity").innerText = quantity;
+  document.getElementById("total").innerText = "PHP " + total;
+  document.getElementById("pickup").innerText = pickup;
+  document.getElementById("address").innerText = address;
+</script>
+
+<style>
+  body {
+    font-family: Arial;
+    background-color: pink;
+    color: black;
+    padding: 20px;
+  }
+
+  h2, h3 {
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  p {
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 8px 0;
+  }
+</style>
+
+</body>
+</html>
