@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Antho-Presko Preorders</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background-color: pink;
+    }
+
+    .container {
+      width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 50px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input, select {
+      width: 95%;
+      padding: 8px;
+      margin: 8px 0;
+    }
+
+    #terms {
+      width: 10%;
+    }
+
+    button {
+      padding: 10px;
+      width: 100%;
+      margin-top: 5px;
+      background-color: purple;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: darkorchid;
+    }
+
+    .error {
+      color: blueviolet;
+      margin-bottom: 10px;
+      min-height: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Antho-Presko Pre-Orders</h2>
+
+  <div id="errorMsg" class="error"></div>
+
+  <form onsubmit="return handleOrder()">
+
+    <label>Name:</label>
+    <input type="text" id="name">
+
+    <label>Product:</label>
+    <select id="variant">
+      <option value="">Select</option>
+      <option value="4 pc AnthoPresko Film-150">4 pc of AnthoPresko Film</option>
+      <option value="9 pc AnthoPresko Film-300">9 pc of AnthoPresko Film</option>
+    </select>
+
+    <label>Quantity:</label>
+    <input type="number" id="quantity">
+
+    <label>Pickup Method:</label>
+    <select id="pickup">
+      <option value="">Select</option>
+      <option value="Delivery">Delivery</option>
+      <option value="Meetup">Meetup</option>
+    </select>
+
+    <label>Address (for delivery only):</label>
+    <input type="text" id="address">
+
+    <label>
+      <input type="checkbox" id="terms"> I accept terms
+    </label>
+    <br><br>
+
+    <button type="button" onclick="loadPreviousOrder()">Load Previous Order</button>
+    <button type="submit">Submit</button>
+
+  </form>
+</div>
+
+<script>
+  function setCookie(name, value, maxAge) {
+    document.cookie = name + "=" + encodeURIComponent(value) +
+    ";max-age=" + maxAge + ";path=/";
+  }
+
+  function getCookie(name) {
+    let cookies = document.cookie.split(";");
+    for (let c of cookies) {
+      let [key, val] = c.trim().split("=");
+      if (key === name) {
+        return decodeURIComponent(val);
+      }
+    }
+    return "";
+  }
+
+  function deleteCookie(name) {
+    document.cookie = name + "=;max-age=0;path=/";
+  }
+
+  function handleOrder() {
+    let errors = [];
+
+    let name = document.getElementById("name").value.trim();
+    let variant = document.getElementById("variant").value;
+    let quantity = document.getElementById("quantity").value;
+    let pickup = document.getElementById("pickup").value;
+    let address = document.getElementById("address").value.trim();
+    let terms = document.getElementById("terms").checked;
+
+    if (!name) errors.push("Customer Name");
+    if (!variant) errors.push("Product");
+    if (!quantity) errors.push("Quantity");
+    if (!pickup) errors.push("Pickup Method");
+
+    if (quantity <= 0) {
+      errors.push("Quantity must be greater than 0");
+    }
+
+    if (pickup === "Delivery" && !address) {
+      errors.push("Address is required for delivery");
+    }
+
+    if (!terms) {
+      errors.push("You must accept the terms");
+    }
+
+    if (errors.length > 0) {
+      document.getElementById("errorMsg").innerHTML =
+      "Please fix the following:<br>" + errors.join("<br>");
+      return false;
+    }
+
+    setCookie("customerName", name, 86400);
+
+    localStorage.setItem("product", variant);
+    localStorage.setItem("quantity", quantity);
+    localStorage.setItem("pickup", pickup);
+    localStorage.setItem("address", address);
+
+    window.location.href = "summary.html";
+    return false;
+  }
+
+  function loadPreviousOrder() {
+    let name = getCookie("customerName");
+    let product = localStorage.getItem("product");
+    let quantity = localStorage.getItem("quantity");
+    let pickup = localStorage.getItem("pickup");
+    let address = localStorage.getItem("address");
+
+    if (!name && !product) {
+      document.getElementById("errorMsg").innerHTML =
+      "No previous order data";
+      return;
+    }
+
+    document.getElementById("name").value = name || "";
+    document.getElementById("variant").value = product || "";
+    document.getElementById("quantity").value = quantity || "";
+    document.getElementById("pickup").value = pickup || "";
+    document.getElementById("address").value = address || "";
+  }
+</script>
+
+</body>
+</html>
